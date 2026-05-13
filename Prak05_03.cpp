@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <iomanip>
 using namespace std;
  
 struct NilaiMK {
@@ -8,246 +7,140 @@ struct NilaiMK {
     string nama_mhs;
     double nilai;
 };
+ 
 struct elemen {
     NilaiMK Kontainer;
-    elemen* next;
+    elemen *next;
 };
+ 
 class Queue {
 private:
-    elemen* first;
-    elemen* last;
-    int jumlah;
- 
-    elemen* createNode(string npm, string nama, double nilai) {
-        elemen* node = new elemen;
-        node->Kontainer.npm       = npm;
-        node->Kontainer.nama_mhs  = nama;
-        node->Kontainer.nilai     = nilai;
-        node->next                = NULL;
-        return node;
-    }
+    elemen *first;
+    elemen *last;
  
 public:
     Queue() {
-        first  = NULL;
-        last   = NULL;
-        jumlah = 0;
+        first = NULL;
+        last  = NULL;
     }
-    ~Queue() {
-        while (first != NULL) {
-            elemen* hapus = first;
-            first = first->next;
+    bool isKosong() {
+        return (first == NULL);
+    }
+    int jmlElemen() {
+        int hasil = 0;
+        if (first != NULL) {
+            elemen *bantu = first;
+            while (bantu != NULL) {
+                hasil = hasil + 1;
+                bantu = bantu->next;
+            }
+        }
+        return hasil;
+    }
+    void add(string npm, string nama_mhs, double nilai) {
+        elemen *info = new elemen;
+        info->Kontainer.npm       = npm;
+        info->Kontainer.nama_mhs  = nama_mhs;
+        info->Kontainer.nilai     = nilai;
+        info->next                = NULL;
+ 
+        if (first == NULL) {
+            first = info;
+        } else {
+            last->next = info;
+        }
+        last = info;
+        info = NULL;
+    }
+    void del() {
+        if (first != NULL) {
+            elemen *hapus = first;
+ 
+            if (jmlElemen() == 1) {
+                first = NULL;
+                last  = NULL;
+            } else {
+                first        = first->next;
+                hapus->next  = NULL;
+            }
             delete hapus;
         }
     }
-    bool isKosong() {
-        return first == NULL;
-    }
-    int jmlElemen() {
-        return jumlah;
-    }
-    void add(string npm, string nama, double nilai) {
-        elemen* node = createNode(npm, nama, nilai);
-        if (first == NULL) {
-            first = node;
+    void CetakQueue() {
+        if (first != NULL) {
+            cout << "MENAMPILKAN QUEUE" << endl;
+            elemen *bantu = first;
+            int i = 1;
+            while (bantu != NULL) {
+                cout << "--------------------------------------------" << endl;
+                cout << "Elemen ke   : " << i << " / " << jmlElemen() << endl;
+                cout << "NPM         : " << bantu->Kontainer.npm       << endl;
+                cout << "Nama Mahasiswa  : " << bantu->Kontainer.nama_mhs  << endl;
+                cout << "Nilai Mahasiswa : " << bantu->Kontainer.nilai      << endl;
+                bantu = bantu->next;
+                i     = i + 1;
+            }
+            cout << "--------------------------------------------" << endl;
         } else {
-            last->next = node;
+            cout << "Queue Kosong" << endl;
         }
-        last = node;
-        jumlah++;
-        cout << "  [OK] Data '" << nama << "' berhasil ditambahkan ke antrian." << endl;
     }
-    void del() {
-        if (first == NULL) {
-            cout << "  [!] Queue kosong, tidak ada data yang dihapus." << endl;
-            return;
-        }
-        elemen* hapus = first;
-        cout << "  [OK] Data '" << hapus->Kontainer.nama_mhs << "' (NPM: "
-             << hapus->Kontainer.npm << ") berhasil dihapus dari antrian." << endl;
- 
-        if (jumlah == 1) {
-            first = NULL;
-            last  = NULL;
-        } else {
-            first       = first->next;
-            hapus->next = NULL;
-        }
-        delete hapus;
-        jumlah--;
-    }
-    void cetakQueue() {
-        if (first == NULL) {
-            cout << "  Queue Kosong." << endl;
-            return;
-        }
-        cout << endl;
-        cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-        cout << "              MENAMPILKAN ISI QUEUE                  " << endl;
-        cout << "          Jumlah Elemen : " << setw(2) << jumlah
-             << "                          " << endl;
-        cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-	    cout << "   |  NPM     |      Nama Mahasiswa      |   Nilai  |" << endl;
-        cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
- 
-        elemen* bantu = first;
-        int i = 1;
-        while (bantu != NULL) {
-            cout << "   " << setw(1) << i << "  "
-                 << setw(12) << left  << bantu->Kontainer.npm      << "  "
-                 << setw(20) << left  << bantu->Kontainer.nama_mhs << "  "
-                 << setw(6)  << right << fixed << setprecision(2)
-                 << bantu->Kontainer.nilai << " " << endl;
-            bantu = bantu->next;
-            i++;
-        }
-        cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-        cout << endl;
-    }
-    void peek() {
-        if (first == NULL) {
-            cout << "  [!] Queue kosong." << endl;
-            return;
-        }
-        cout << "  [FRONT] NPM: " << first->Kontainer.npm
-             << " | Nama: " << first->Kontainer.nama_mhs
-             << " | Nilai: " << fixed << setprecision(2) << first->Kontainer.nilai << endl;
+    void inputData() {
+        string npm, nama;
+        double nilai;
+        cout << "Masukkan NPM       : ";
+        cin >> npm;
+        cin.ignore();
+        cout << "Masukkan Nama MHS  : ";
+        getline(cin, nama);
+        cout << "Masukkan Nilai     : ";
+        cin >> nilai;
+        add(npm, nama, nilai);
+        cout << "Data berhasil ditambahkan ke queue." << endl;
     }
 };
-void cetakMenu() {
-    cout << endl;
-    cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "         MENU QUEUE MAHASISWA         " << endl;
-    cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "     1. Tambah Data (Enqueue / ADD)   " << endl;
-    cout << "     2. Hapus Data  (Dequeue / DEL)   " << endl;
-    cout << "     3. Tampilkan Queue               " << endl;
-    cout << "     4. Lihat Antrian Terdepan        " << endl;
-    cout << "     5. Cek Jumlah Elemen             " << endl;
-    cout << "     0. Keluar                        " << endl;
-    cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "  Pilihan : ";
-}
- 
-double inputNilai() {
-    double n;
-    while (true) {
-        cin >> n;
-        if (cin.fail() || n < 0 || n > 100) {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "  [!] Nilai harus antara 0 - 100. Masukkan lagi: ";
-        } else {
-            cin.ignore(1000, '\n');
-            return n;
-        }
-    }
-}
 int main() {
     Queue Q;
     int pilihan;
-    string npm, nama;
-    double nilai;
  
-    cout << endl;
-    cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "       PROGRAM QUEUE NILAI MAHASISWA (CLASS)        " << endl;
-    cout << "           Algoritma dan Struktur Data              " << endl;
-    cout << "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
- 
-    // Input data awal
-    cout << endl;
-    cout << "  Masukkan data awal mahasiswa." << endl;
-    cout << "  Ketik 'selesai' pada NPM untuk mengakhiri input." << endl;
-    cout << endl;
- 
-    int urutan = 1;
-    while (true) {
-        cout << "  --- Data ke-" << urutan << " ---" << endl;
-        cout << "  NPM          : ";
-        getline(cin, npm);
- 
-        if (npm == "selesai" || npm == "SELESAI") break;
-        if (npm.empty()) {
-            cout << "  [!] NPM tidak boleh kosong." << endl;
-            continue;
-        }
- 
-        cout << "  Nama Mahasiswa : ";
-        getline(cin, nama);
-        if (nama.empty()) {
-            cout << "  [!] Nama tidak boleh kosong." << endl;
-            continue;
-        }
- 
-        cout << "  Nilai (0-100)  : ";
-        nilai = inputNilai();
- 
-        Q.add(npm, nama, nilai);
-        urutan++;
-        cout << endl;
-    }
- 
-    cout << endl;
-    cout << "  Data awal berhasil dimasukkan." << endl;
-    Q.cetakQueue();
- 
-    // Loop menu
     do {
-        cetakMenu();
-        while (!(cin >> pilihan)) {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "  [!] Input tidak valid. Masukkan angka: ";
-        }
-        cin.ignore(1000, '\n');
-        cout << endl;
+        cout << "\n========== MENU QUEUE NILAI MK ==========" << endl;
+        cout << "1. Tambah Data (Enqueue)" << endl;
+        cout << "2. Hapus Data  (Dequeue)" << endl;
+        cout << "3. Tampilkan Queue" << endl;
+        cout << "4. Cek Queue Kosong" << endl;
+        cout << "5. Jumlah Elemen" << endl;
+        cout << "0. Keluar" << endl;
+        cout << "Pilihan : ";
+        cin >> pilihan;
  
         switch (pilihan) {
             case 1:
-                cout << "  === TAMBAH DATA (ENQUEUE) ===" << endl;
-                cout << "  NPM            : ";
-                getline(cin, npm);
-                cout << "  Nama Mahasiswa : ";
-                getline(cin, nama);
-                cout << "  Nilai (0-100)  : ";
-                nilai = inputNilai();
-                Q.add(npm, nama, nilai);
-                Q.cetakQueue();
+                Q.inputData();
                 break;
- 
             case 2:
-                cout << "  === HAPUS DATA (DEQUEUE) ===" << endl;
                 Q.del();
-                Q.cetakQueue();
+                cout << "Elemen pertama telah dihapus." << endl;
                 break;
- 
             case 3:
-                Q.cetakQueue();
+                cout << endl;
+                Q.CetakQueue();
                 break;
- 
             case 4:
-                cout << "  === ELEMEN TERDEPAN ===" << endl;
-                Q.peek();
-                cout << endl;
+                if (Q.isKosong())
+                    cout << "Queue KOSONG." << endl;
+                else
+                    cout << "Queue TIDAK kosong." << endl;
                 break;
- 
             case 5:
-                cout << "  Jumlah elemen dalam queue : " << Q.jmlElemen() << endl;
-                cout << "  Status queue              : "
-                     << (Q.isKosong() ? "KOSONG" : "TIDAK KOSONG") << endl;
-                cout << endl;
+                cout << "Jumlah elemen : " << Q.jmlElemen() << endl;
                 break;
- 
             case 0:
-                cout << "  Program selesai. Terima kasih!" << endl;
-                cout << endl;
+                cout << "Program selesai." << endl;
                 break;
- 
             default:
-                cout << "  [!] Pilihan tidak valid, coba lagi." << endl;
+                cout << "Pilihan tidak valid." << endl;
         }
- 
     } while (pilihan != 0);
  
     return 0;
